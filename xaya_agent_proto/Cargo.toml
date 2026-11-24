@@ -1,0 +1,11 @@
+[package]
+name = "xaya_agent_proto"
+version = "0.0.1"
+edition.workspace = true
+rust-version.workspace = true
+license = "Apache-2.0"
+description = "Runtime-independent wire types for the XaYa agent service"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

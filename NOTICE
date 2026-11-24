@@ -1,0 +1,13 @@
+XaYa
+Maintained by izenloading.
+Forked from Alacritty: https://github.com/alacritty/alacritty
+
+Upstream attribution (historical, not XaYa maintenance contacts):
+Copyright 2016 Joe Wilm, The Alacritty Project Contributors
+Original authors: Christian Duerr and Joe Wilm.
+Original manual maintainers: Christian Duerr <contact@christianduerr.com>
+and Kirill Chibisov <contact@kchibisov.com>.
+
+XaYa includes modifications to the upstream code, documentation, artwork,
+and packaging. Original license and copyright notices are retained.
+See LICENSE-APACHE and LICENSE-MIT for the applicable license texts.

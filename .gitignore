@@ -1,0 +1,5 @@
+target
+__pycache__/
+
+# Local macOS files
+.DS_Store

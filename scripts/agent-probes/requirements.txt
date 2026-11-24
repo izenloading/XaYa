@@ -1,0 +1,2 @@
+# Only the opt-in native TUI / local-model probe needs this dependency.
+websockets==17.3

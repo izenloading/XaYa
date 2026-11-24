@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+TryExec=xaya
+Exec=xaya
+Icon=xaya
+Terminal=false
+Categories=System;TerminalEmulator;
+
+Name=XaYa
+GenericName=Terminal
+Comment=A fast, cross-platform, GPU-accelerated terminal emulator
+StartupNotify=true
+StartupWMClass=xaya
+Actions=New;
+
+[Desktop Action New]
+Name=New Terminal
+Exec=xaya

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: MIT -->
+<component type="desktop-application">
+  <id>org.xaya.terminal</id>
+
+  <developer_name>izenloading</developer_name>
+  <developer id="io.github.izenloading">
+    <name>izenloading</name>
+  </developer>
+
+  <name>XaYa</name>
+
+  <project_license>Apache-2.0</project_license>
+  <metadata_license>MIT</metadata_license>
+
+  <summary>A fast, cross-platform, GPU-accelerated terminal emulator</summary>
+  <description>
+    <p>XaYa is a GPU-accelerated terminal emulator maintained by izenloading, forked from Alacritty.</p>
+    <ul>
+      <li>Wayland native</li>
+      <li>X11 native</li>
+      <li>DE agnostic</li>
+    </ul>
+  </description>
+
+  <categories>
+    <category>TerminalEmulator</category>
+  </categories>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/alacritty/alacritty/0a1e735cf6b13da1dbe5d161d17c8aa6c1692204/extra/promo/alacritty-readme.png</image>
+      <caption>Alacritty with default theme showing neovim</caption>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://github.com/izenloading/XaYa</url>
+  <url type="bugtracker">https://github.com/izenloading/XaYa/issues</url>
+
+  <launchable type="desktop-id">xaya.desktop</launchable>
+
+  <content_rating type="oars-1.0" />
+</component>

@@ -1,0 +1,52 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install stable toolchain
+        run: rustup toolchain install stable --profile minimal --component clippy
+      - name: Stable
+        run: cargo +stable test --locked
+      - name: Stable (no default features)
+        run: cargo +stable test -p alacritty_terminal --no-default-features --locked
+      - name: Minimum supported Rust version
+        run: |
+          msrv=$(sed -n 's/^rust-version = "\([^"]*\)"/\1/p' Cargo.toml)
+          rustup toolchain install "$msrv" --profile minimal
+          cargo +"$msrv" test --locked
+      - name: Clippy
+        run: cargo +stable clippy --workspace --all-targets --locked -- -D warnings
+
+  offline-agent-probes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked probe transport dependency
+        run: python -m pip install -r scripts/agent-probes/requirements.txt
+      - name: Offline Python fixture and protocol regressions
+        run: python -m unittest discover -s scripts/agent-probes -p 'test_*.py' -v
+      - name: Offline Claude Mods regressions
+        run: node --test scripts/agent-probes/test_claude_mod.mjs scripts/agent-probes/test_managed_claude_mod.mjs

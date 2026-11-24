@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  CARGO_TERM_COLOR: always
+
+jobs:
+  macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: brew install scdoc
+      - name: Update toolchain
+        run: rustup update
+      # `macos-latest` runs on Apple Silicon, the only supported Mac architecture.
+      - name: Test
+        run: cargo test --release
+      - name: Make DMG
+        run: make dmg
+      - name: Upload Application
+        run: |
+          mv ./target/release/osx/XaYa.dmg ./xaya-${GITHUB_REF##*/}.dmg
+          ./.github/workflows/upload_asset.sh ./xaya-${GITHUB_REF##*/}.dmg $GITHUB_TOKEN
+
+  linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install cmake pkg-config libfreetype6-dev libfontconfig1-dev \
+            libxcb-xfixes0-dev libxkbcommon-dev python3 scdoc
+      - name: Test
+        run: cargo test --release
+      - name: Generate manpages
+        run: |
+          scdoc < extra/man/alacritty.1.scd | gzip -c > "./alacritty.1.gz"
+          scdoc < extra/man/alacritty-msg.1.scd | gzip -c > "./alacritty-msg.1.gz"
+          scdoc < extra/man/alacritty.5.scd | gzip -c > "./alacritty.5.gz"
+          scdoc < extra/man/alacritty-bindings.5.scd | gzip -c > "./alacritty-bindings.5.gz"
+          scdoc < extra/man/alacritty-escapes.7.scd | gzip -c > "./alacritty-escapes.7.gz"
+      - name: Upload Assets
+        run: |
+          mv ./extra/logo/xaya-term.svg ./xaya.svg
+          ./.github/workflows/upload_asset.sh ./xaya.svg $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./alacritty.1.gz $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./alacritty-msg.1.gz $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./alacritty.5.gz $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./alacritty-bindings.5.gz $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./alacritty-escapes.7.gz $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./extra/completions/xaya.bash $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./extra/completions/xaya.fish $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./extra/completions/_xaya $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./extra/linux/xaya.desktop $GITHUB_TOKEN
+          ./.github/workflows/upload_asset.sh ./extra/alacritty.info $GITHUB_TOKEN

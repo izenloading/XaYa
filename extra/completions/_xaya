@@ -1,0 +1,729 @@
+#compdef xaya
+
+autoload -U is-at-least
+
+_xaya() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" : \
+'--embed=[X11 window ID to embed Alacritty within (decimal or hexadecimal with "0x" prefix)]:EMBED:_default' \
+'--socket=[Path for IPC socket creation]:SOCKET:_files' \
+'--working-directory=[Start the shell in the specified working directory]:WORKING_DIRECTORY:_files' \
+'*-e+[Command and args to execute (must be last argument)]:COMMAND:_default' \
+'*--command=[Command and args to execute (must be last argument)]:COMMAND:_default' \
+'-T+[Defines the window title \[default\: XaYa\]]:TITLE:_default' \
+'--title=[Defines the window title \[default\: XaYa\]]:TITLE:_default' \
+'--class=[Defines window class/app_id on X11/Wayland \[default\: xaya\]]:general> | <general>,<instance:_default' \
+'*-o+[Override configuration file options \[example\: '\''cursor.style="Beam"'\''\]]:OPTION:_default' \
+'*--option=[Override configuration file options \[example\: '\''cursor.style="Beam"'\''\]]:OPTION:_default' \
+'--config-file=[Specify alternative configuration file \[default\: \$HOME/.config/xaya/xaya.toml\].]:CONFIG_FILE:_files' \
+'--print-events[Print all events to STDOUT]' \
+'(--daemon)--ref-test[Generates ref test]' \
+'(-v)*-q[Reduces the level of verbosity (the min level is -qq)]' \
+'(-q)*-v[Increases the level of verbosity (the max level is -vvv)]' \
+'--daemon[Do not spawn an initial window]' \
+'--hold[Remain open after child process exit]' \
+'-h[Print help]' \
+'--help[Print help]' \
+'-V[Print version]' \
+'--version[Print version]' \
+":: :_xaya_commands" \
+"*::: :->xaya" \
+&& ret=0
+    case $state in
+    (xaya)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:xaya-command-$line[1]:"
+        case $line[1] in
+            (msg)
+_arguments "${_arguments_options[@]}" : \
+'-s+[IPC socket connection path override]:SOCKET:_files' \
+'--socket=[IPC socket connection path override]:SOCKET:_files' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_xaya__msg_commands" \
+"*::: :->msg" \
+&& ret=0
+
+    case $state in
+    (msg)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:xaya-msg-command-$line[1]:"
+        case $line[1] in
+            (create-window)
+_arguments "${_arguments_options[@]}" : \
+'--working-directory=[Start the shell in the specified working directory]:WORKING_DIRECTORY:_files' \
+'*-e+[Command and args to execute (must be last argument)]:COMMAND:_default' \
+'*--command=[Command and args to execute (must be last argument)]:COMMAND:_default' \
+'-T+[Defines the window title \[default\: XaYa\]]:TITLE:_default' \
+'--title=[Defines the window title \[default\: XaYa\]]:TITLE:_default' \
+'--class=[Defines window class/app_id on X11/Wayland \[default\: xaya\]]:general> | <general>,<instance:_default' \
+'*-o+[Override configuration file options \[example\: '\''cursor.style="Beam"'\''\]]:OPTION:_default' \
+'*--option=[Override configuration file options \[example\: '\''cursor.style="Beam"'\''\]]:OPTION:_default' \
+'--hold[Remain open after child process exit]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(config)
+_arguments "${_arguments_options[@]}" : \
+'-w+[Window ID for the new config]:WINDOW_ID:_default' \
+'--window-id=[Window ID for the new config]:WINDOW_ID:_default' \
+'()-r[Clear all runtime configuration changes]' \
+'()--reset[Clear all runtime configuration changes]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+'*::options -- Configuration file options \[example\: '\''cursor.style="Beam"'\''\]:_default' \
+&& ret=0
+;;
+(get-config)
+_arguments "${_arguments_options[@]}" : \
+'-w+[Window ID for the config request]:WINDOW_ID:_default' \
+'--window-id=[Window ID for the config request]:WINDOW_ID:_default' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" : \
+'--json[Print JSON instead of a table]' \
+'(--watch)--wait[Wait until no window has a program working, then print]' \
+'--watch[Keep running and print each window as its program reports something new, one line per change; with \`--json\`, one JSON object per line]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(focus)
+_arguments "${_arguments_options[@]}" : \
+'-w+[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'--window-id=[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(get-text)
+_arguments "${_arguments_options[@]}" : \
+'-w+[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'--window-id=[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'(--last-command)--lines=[The last rows with content, scrollback included, rather than the screen]:LINES:_default' \
+'--last-command[The last shell command and its output, from shell integration]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(send-text)
+_arguments "${_arguments_options[@]}" : \
+'-w+[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'--window-id=[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'--enter[Press Enter after the text, submitting it]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':text -- Text to send:_default' \
+&& ret=0
+;;
+(create-worktree)
+_arguments "${_arguments_options[@]}" : \
+'-w+[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'--window-id=[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'-b+[Branch to create, or check out if it exists; by default the first free \`agent-N\`]:BRANCH:_default' \
+'--branch=[Branch to create, or check out if it exists; by default the first free \`agent-N\`]:BRANCH:_default' \
+'-c+[Command to start in the new tab; by default \`worktree.command\`, or the window'\''s agent]:COMMAND:_default' \
+'--command=[Command to start in the new tab; by default \`worktree.command\`, or the window'\''s agent]:COMMAND:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(split)
+_arguments "${_arguments_options[@]}" : \
+'-w+[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'--window-id=[Window ID, as \`msg status\` lists it; the focused window when absent]:WINDOW_ID:_default' \
+'-c+[Command typed into the new pane'\''s shell once it'\''s ready]:COMMAND:_default' \
+'--command=[Command typed into the new pane'\''s shell once it'\''s ready]:COMMAND:_default' \
+'-d[Put the new pane below the focused one, rather than on its right]' \
+'--down[Put the new pane below the focused one, rather than on its right]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_xaya__msg__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:xaya-msg-help-command-$line[1]:"
+        case $line[1] in
+            (create-window)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(config)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(get-config)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(focus)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(get-text)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(send-text)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(create-worktree)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(split)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(agent)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(run)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(attach)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(checkpoint)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(check)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(project)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(land)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(review)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(task)
+_arguments "${_arguments_options[@]}" : \
+'*::arguments:_default' \
+&& ret=0
+;;
+(migrate)
+_arguments "${_arguments_options[@]}" : \
+'-c+[Path to the configuration file]:CONFIG_FILE:_files' \
+'--config-file=[Path to the configuration file]:CONFIG_FILE:_files' \
+'-d[Only output TOML config to STDOUT]' \
+'--dry-run[Only output TOML config to STDOUT]' \
+'-i[Do not recurse over imports]' \
+'--skip-imports[Do not recurse over imports]' \
+'--skip-renames[Do not move renamed fields to their new location]' \
+'-s[Do not output to STDOUT]' \
+'--silent[Do not output to STDOUT]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_xaya__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:xaya-help-command-$line[1]:"
+        case $line[1] in
+            (msg)
+_arguments "${_arguments_options[@]}" : \
+":: :_xaya__help__msg_commands" \
+"*::: :->msg" \
+&& ret=0
+
+    case $state in
+    (msg)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:xaya-help-msg-command-$line[1]:"
+        case $line[1] in
+            (create-window)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(config)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(get-config)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(focus)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(get-text)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(send-text)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(create-worktree)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(split)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(agent)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(run)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(attach)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(checkpoint)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(check)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(project)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(land)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(review)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(task)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(migrate)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_xaya_commands] )) ||
+_xaya_commands() {
+    local commands; commands=(
+'msg:Send a message to the Alacritty socket' \
+'agent:Manage the local agent service (start, status, stop)' \
+'run:Start a managed Codex or Claude session in the current terminal' \
+'attach:Attach the native engine TUI to a managed session' \
+'checkpoint:Capture a managed workspace in a private Git reference' \
+'check:Run and inspect checkpoint verification commands' \
+'project:Inspect and trust repository verification commands' \
+'land:Preview, verify and land a squash candidate on a local branch' \
+'review:Review a checkpoint with a headless engine in a private, read-only checkout' \
+'task:Tasks\: a goal and testable acceptance criteria for sessions, used by reviews' \
+'migrate:Migrate the configuration file' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'xaya commands' commands "$@"
+}
+(( $+functions[_xaya__agent_commands] )) ||
+_xaya__agent_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya agent commands' commands "$@"
+}
+(( $+functions[_xaya__attach_commands] )) ||
+_xaya__attach_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya attach commands' commands "$@"
+}
+(( $+functions[_xaya__check_commands] )) ||
+_xaya__check_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya check commands' commands "$@"
+}
+(( $+functions[_xaya__checkpoint_commands] )) ||
+_xaya__checkpoint_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya checkpoint commands' commands "$@"
+}
+(( $+functions[_xaya__help_commands] )) ||
+_xaya__help_commands() {
+    local commands; commands=(
+'msg:Send a message to the Alacritty socket' \
+'agent:Manage the local agent service (start, status, stop)' \
+'run:Start a managed Codex or Claude session in the current terminal' \
+'attach:Attach the native engine TUI to a managed session' \
+'checkpoint:Capture a managed workspace in a private Git reference' \
+'check:Run and inspect checkpoint verification commands' \
+'project:Inspect and trust repository verification commands' \
+'land:Preview, verify and land a squash candidate on a local branch' \
+'review:Review a checkpoint with a headless engine in a private, read-only checkout' \
+'task:Tasks\: a goal and testable acceptance criteria for sessions, used by reviews' \
+'migrate:Migrate the configuration file' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'xaya help commands' commands "$@"
+}
+(( $+functions[_xaya__help__agent_commands] )) ||
+_xaya__help__agent_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help agent commands' commands "$@"
+}
+(( $+functions[_xaya__help__attach_commands] )) ||
+_xaya__help__attach_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help attach commands' commands "$@"
+}
+(( $+functions[_xaya__help__check_commands] )) ||
+_xaya__help__check_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help check commands' commands "$@"
+}
+(( $+functions[_xaya__help__checkpoint_commands] )) ||
+_xaya__help__checkpoint_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help checkpoint commands' commands "$@"
+}
+(( $+functions[_xaya__help__help_commands] )) ||
+_xaya__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help help commands' commands "$@"
+}
+(( $+functions[_xaya__help__land_commands] )) ||
+_xaya__help__land_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help land commands' commands "$@"
+}
+(( $+functions[_xaya__help__migrate_commands] )) ||
+_xaya__help__migrate_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help migrate commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg_commands] )) ||
+_xaya__help__msg_commands() {
+    local commands; commands=(
+'create-window:Create a new window in the same xaya process' \
+'config:Update the Alacritty configuration' \
+'get-config:Read runtime Alacritty configuration' \
+'status:Show what the agents in each window are doing' \
+'focus:Bring a window to the front' \
+'get-text:Print a window'\''s text\: its screen, its last lines or its last shell command' \
+'send-text:Type text into a window, the way pasting it would' \
+'create-worktree:Open a tab in a new git worktree of a window'\''s repository, printing its path' \
+'split:Split a window'\''s focused pane, starting a shell beside it' \
+    )
+    _describe -t commands 'xaya help msg commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__config_commands] )) ||
+_xaya__help__msg__config_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg config commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__create-window_commands] )) ||
+_xaya__help__msg__create-window_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg create-window commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__create-worktree_commands] )) ||
+_xaya__help__msg__create-worktree_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg create-worktree commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__focus_commands] )) ||
+_xaya__help__msg__focus_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg focus commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__get-config_commands] )) ||
+_xaya__help__msg__get-config_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg get-config commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__get-text_commands] )) ||
+_xaya__help__msg__get-text_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg get-text commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__send-text_commands] )) ||
+_xaya__help__msg__send-text_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg send-text commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__split_commands] )) ||
+_xaya__help__msg__split_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg split commands' commands "$@"
+}
+(( $+functions[_xaya__help__msg__status_commands] )) ||
+_xaya__help__msg__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help msg status commands' commands "$@"
+}
+(( $+functions[_xaya__help__project_commands] )) ||
+_xaya__help__project_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help project commands' commands "$@"
+}
+(( $+functions[_xaya__help__review_commands] )) ||
+_xaya__help__review_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help review commands' commands "$@"
+}
+(( $+functions[_xaya__help__run_commands] )) ||
+_xaya__help__run_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help run commands' commands "$@"
+}
+(( $+functions[_xaya__help__task_commands] )) ||
+_xaya__help__task_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya help task commands' commands "$@"
+}
+(( $+functions[_xaya__land_commands] )) ||
+_xaya__land_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya land commands' commands "$@"
+}
+(( $+functions[_xaya__migrate_commands] )) ||
+_xaya__migrate_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya migrate commands' commands "$@"
+}
+(( $+functions[_xaya__msg_commands] )) ||
+_xaya__msg_commands() {
+    local commands; commands=(
+'create-window:Create a new window in the same xaya process' \
+'config:Update the Alacritty configuration' \
+'get-config:Read runtime Alacritty configuration' \
+'status:Show what the agents in each window are doing' \
+'focus:Bring a window to the front' \
+'get-text:Print a window'\''s text\: its screen, its last lines or its last shell command' \
+'send-text:Type text into a window, the way pasting it would' \
+'create-worktree:Open a tab in a new git worktree of a window'\''s repository, printing its path' \
+'split:Split a window'\''s focused pane, starting a shell beside it' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'xaya msg commands' commands "$@"
+}
+(( $+functions[_xaya__msg__config_commands] )) ||
+_xaya__msg__config_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg config commands' commands "$@"
+}
+(( $+functions[_xaya__msg__create-window_commands] )) ||
+_xaya__msg__create-window_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg create-window commands' commands "$@"
+}
+(( $+functions[_xaya__msg__create-worktree_commands] )) ||
+_xaya__msg__create-worktree_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg create-worktree commands' commands "$@"
+}
+(( $+functions[_xaya__msg__focus_commands] )) ||
+_xaya__msg__focus_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg focus commands' commands "$@"
+}
+(( $+functions[_xaya__msg__get-config_commands] )) ||
+_xaya__msg__get-config_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg get-config commands' commands "$@"
+}
+(( $+functions[_xaya__msg__get-text_commands] )) ||
+_xaya__msg__get-text_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg get-text commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help_commands] )) ||
+_xaya__msg__help_commands() {
+    local commands; commands=(
+'create-window:Create a new window in the same xaya process' \
+'config:Update the Alacritty configuration' \
+'get-config:Read runtime Alacritty configuration' \
+'status:Show what the agents in each window are doing' \
+'focus:Bring a window to the front' \
+'get-text:Print a window'\''s text\: its screen, its last lines or its last shell command' \
+'send-text:Type text into a window, the way pasting it would' \
+'create-worktree:Open a tab in a new git worktree of a window'\''s repository, printing its path' \
+'split:Split a window'\''s focused pane, starting a shell beside it' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'xaya msg help commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__config_commands] )) ||
+_xaya__msg__help__config_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help config commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__create-window_commands] )) ||
+_xaya__msg__help__create-window_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help create-window commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__create-worktree_commands] )) ||
+_xaya__msg__help__create-worktree_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help create-worktree commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__focus_commands] )) ||
+_xaya__msg__help__focus_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help focus commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__get-config_commands] )) ||
+_xaya__msg__help__get-config_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help get-config commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__get-text_commands] )) ||
+_xaya__msg__help__get-text_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help get-text commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__help_commands] )) ||
+_xaya__msg__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help help commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__send-text_commands] )) ||
+_xaya__msg__help__send-text_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help send-text commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__split_commands] )) ||
+_xaya__msg__help__split_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help split commands' commands "$@"
+}
+(( $+functions[_xaya__msg__help__status_commands] )) ||
+_xaya__msg__help__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg help status commands' commands "$@"
+}
+(( $+functions[_xaya__msg__send-text_commands] )) ||
+_xaya__msg__send-text_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg send-text commands' commands "$@"
+}
+(( $+functions[_xaya__msg__split_commands] )) ||
+_xaya__msg__split_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg split commands' commands "$@"
+}
+(( $+functions[_xaya__msg__status_commands] )) ||
+_xaya__msg__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya msg status commands' commands "$@"
+}
+(( $+functions[_xaya__project_commands] )) ||
+_xaya__project_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya project commands' commands "$@"
+}
+(( $+functions[_xaya__review_commands] )) ||
+_xaya__review_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya review commands' commands "$@"
+}
+(( $+functions[_xaya__run_commands] )) ||
+_xaya__run_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya run commands' commands "$@"
+}
+(( $+functions[_xaya__task_commands] )) ||
+_xaya__task_commands() {
+    local commands; commands=()
+    _describe -t commands 'xaya task commands' commands "$@"
+}
+
+if [ "$funcstack[1]" = "_xaya" ]; then
+    _xaya "$@"
+else
+    compdef _xaya xaya
+fi

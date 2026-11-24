@@ -1,0 +1,614 @@
+# XaYa 示例配置文件
+#
+# 快速上手
+# --------
+# 1. 复制到配置目录（XaYa 不会自动创建配置文件）：
+#
+#        mkdir -p ~/.config/xaya
+#        cp xaya.example.toml ~/.config/xaya/xaya.toml
+#
+# 2. 找到想改的配置项，删掉行首的 `#`，再改成你要的值。
+# 3. 保存即可，XaYa 会自动重新加载；标注了“需重启”的配置项要重启后生效。
+#
+# 阅读约定
+# --------
+# - `#key = value`（`#` 后没有空格）是配置项，写的是默认值；标注“示例”的没有默认值。
+# - `# 文字`（`#` 后有空格）是说明。
+# - 所有配置项都是可选的。原样复制本文件不会改变任何行为。
+# - 配置写错时，XaYa 会在窗口底部的消息栏里提示出错的配置项，其余配置照常生效。
+#
+# 查找顺序（使用第一个存在的文件）：
+#   1. $XDG_CONFIG_HOME/xaya/xaya.toml
+#   2. ~/.config/xaya/xaya.toml
+#   3. Alacritty 的位置，例如 ~/.config/alacritty/alacritty.toml
+# 也可以用 `xaya --config-file <路径>` 指定。
+#
+# 完整说明见 `man 5 alacritty`，使用方法见 docs/user-guide.zh-CN.md。
+
+
+# ============================================================================
+# 最常改的几项
+# ============================================================================
+# 新用户通常只需要关心这些，下面各节里都有详细说明：
+#
+#   [font]           size、normal.family          字号和字体
+#   [window]         padding、opacity、decorations 窗口外观
+#   [window]         option_as_alt                让 Option 键当 Alt 用（macOS）
+#   [notifications]  only_when_unfocused          看着窗口时是否也发通知
+#   [session]        restore                      启动时是否恢复上次的 agent 会话
+#   [hints]          editor                       Cmd+单击文件路径时用哪个编辑器打开
+#   [general]        import                       引入主题等其他配置文件
+
+
+# ============================================================================
+# [general] 通用
+# ============================================================================
+[general]
+
+# 引入其他配置文件，常用来放主题或快捷键。
+# 按顺序加载，文件不存在则跳过；当前文件最后加载，同名配置项以当前文件为准。
+# 路径可以是绝对路径、以 `~/` 开头的路径，或相对当前配置文件的路径。
+# 示例：
+#import = [
+#  "~/.config/xaya/catppuccin-mocha.toml",
+#  "keybindings.toml",
+#]
+
+# shell 的启动目录。"None" 表示沿用启动 XaYa 的进程所在目录。
+#working_directory = "None"
+
+# 配置文件改动后自动重新加载（改这一项本身需重启）。
+#live_config_reload = true
+
+# 是否开启 `xaya msg` 使用的 IPC 通道（仅 Unix）。
+# 关闭后 `xaya msg status`、`focus`、`split` 等命令都无法使用。
+#ipc_socket = true
+
+# 是否允许 `xaya msg send-text` 向窗口里输入文字（仅 Unix）。
+# 开启后，任何以你的身份运行的程序都能向 XaYa 里的 agent 发指令，所以默认关闭。
+# 只能在配置文件里开启，`xaya msg config` 改不了。
+#ipc_send_text = false
+
+
+# ============================================================================
+# [env] 环境变量
+# ============================================================================
+# 这里的键值对会加到 XaYa 启动的所有进程（包括 shell）的环境变量里，
+# 可能覆盖 XaYa 自己设置的变量。
+[env]
+
+# 示例：
+#WINIT_X11_SCALE_FACTOR = "1.0"
+
+
+# ============================================================================
+# [window] 窗口
+# ============================================================================
+[window]
+
+# 窗口大小，单位是行和列（不是像素），需重启。
+# 两个都非 0 才生效，列数至少为 2；都为 0 时使用系统推荐的大小。
+#dimensions = { columns = 0, lines = 0 }
+
+# 窗口启动位置，单位像素；"None" 交给系统决定。Wayland 上无效。
+# 指定位置的写法：position = { x = 100, y = 100 }
+#position = "None"
+
+# 终端内容四周的留白，单位像素，会按 DPI 缩放，两侧各加一份。
+#padding = { x = 0, y = 0 }
+
+# 窗口尺寸不是单元格整数倍时，把多出来的空间均匀分到内容四周。
+#dynamic_padding = false
+
+# 窗口装饰：
+#   "Full"        边框和标题栏
+#   "None"        都没有
+#   "Transparent" 透明标题栏，保留红绿灯按钮（仅 macOS）
+#   "Buttonless"  透明标题栏，不显示按钮（仅 macOS）
+#decorations = "Full"
+
+# 背景不透明度，0.0（全透明）到 1.0（不透明）。
+#opacity = 1.0
+
+# 让系统把透明窗口后面的内容模糊处理（macOS、KDE Wayland 支持）。
+#blur = false
+
+# 启动时的窗口状态，需重启：
+#   "Windowed"         普通窗口
+#   "Maximized"        最大化
+#   "Fullscreen"       全屏
+#   "SimpleFullscreen" 全屏但不占用独立桌面空间（仅 macOS）
+#startup_mode = "Windowed"
+
+# 窗口标题。agent 的状态徽标（⏳ 🔔 ✅ ❌）会加在标题前面。
+# agent 完成等通知没有自带正文时，也用它作为通知正文。
+#title = "XaYa"
+
+# 是否允许终端里的程序修改窗口标题。
+#dynamic_title = true
+
+# 窗口 class（仅 Linux/BSD）。Wayland 上 general 用作 app_id，instance 被忽略。
+#class = { instance = "xaya", general = "xaya" }
+
+# 强制窗口装饰使用深色或浅色："Dark" | "Light" | "None"（跟随系统）。
+#decorations_theme_variant = "None"
+
+# 调整窗口大小时按单元格尺寸一格一格地变（macOS、X11、Wayland 支持）。
+#resize_increments = false
+
+# 把 Option 键当作 Alt 键（仅 macOS）："OnlyLeft" | "OnlyRight" | "Both" | "None"。
+# 用 Alt+B / Alt+F 之类的 shell 快捷键时需要打开。
+#option_as_alt = "None"
+
+# 窗口层级："Normal" | "AlwaysOnTop"（总在最前）。
+#level = "Normal"
+
+
+# ============================================================================
+# [scrolling] 滚动
+# ============================================================================
+[scrolling]
+
+# 回滚缓冲区保留的最大行数；0 关闭回滚，上限 100000。
+#history = 10000
+
+# 每次滚动（滚轮一格）移动的行数。
+#multiplier = 3
+
+
+# ============================================================================
+# [font] 字体
+# ============================================================================
+[font]
+
+# 常规字体。默认字体：macOS 为 Menlo，Linux/BSD 为 monospace，Windows 为 Consolas。
+# 下面是 macOS 上的默认值。
+#normal = { family = "Menlo", style = "Regular" }
+
+# 粗体、斜体、粗斜体。不写 family 时沿用 normal 的字体。
+#bold = { style = "Bold" }
+#italic = { style = "Italic" }
+#bold_italic = { style = "Bold Italic" }
+
+# 字号，单位是点（pt）。
+#size = 11.25
+
+# 每个字符四周的额外间距：x 调字间距，y 调行间距。
+#offset = { x = 0, y = 0 }
+
+# 字形在单元格内的偏移：x 增大向右移，y 增大向上移。
+#glyph_offset = { x = 0, y = 0 }
+
+# 用内置字形绘制制表符、方块字符和 Powerline 符号，
+# 这样线条能无缝衔接，不受所选字体影响。
+#builtin_box_drawing = true
+
+
+# ============================================================================
+# [colors] 颜色
+# ============================================================================
+# 颜色写成 "#RRGGBB"。想换主题时，更常见的做法是把主题文件放到配置目录，
+# 再用 [general] 的 import 引入。
+[colors]
+
+# 透明度（window.opacity）是否应用到所有单元格背景。
+# false 时只有默认背景透明，程序自己设置的背景色保持不透明。
+#transparent_background_colors = false
+
+# 粗体文字是否改用 bright 一组的颜色绘制。
+#draw_bold_text_with_bright_colors = false
+
+# 文字与背景的最低 WCAG 对比度。
+# 程序指定的颜色对比度不足时，会在保持色相的前提下调亮或调暗到这个值；
+# 默认前景/背景、选区、hints 和搜索匹配不受影响。
+# 范围 1.0（关闭）到 21.0（只剩黑白）；agent 输出里有看不清的暗色文字时，可以试试 3.0。
+#minimum_contrast = 1.0
+
+# 16 到 255 号索引色，不设置时使用标准的默认值。
+# 写法：indexed_colors = [{ index = 16, color = "#ff8700" }]
+#indexed_colors = []
+
+# 默认前景和背景。
+[colors.primary]
+#foreground = "#d8d8d8"
+#background = "#181818"
+# 暗淡文字的前景色；不设置时根据 foreground 自动计算。
+#dim_foreground = "#828482"
+# 粗体文字的前景色，仅在 draw_bold_text_with_bright_colors 为 true 时使用；
+# "None" 表示沿用 foreground。
+#bright_foreground = "None"
+
+# 光标颜色。除了十六进制颜色，还可以写 "CellForeground" / "CellBackground"，
+# 表示取光标所在单元格的前景或背景色。
+[colors.cursor]
+#text = "CellBackground"
+#cursor = "CellForeground"
+
+# vi 模式下的光标颜色。
+[colors.vi_mode_cursor]
+#text = "CellBackground"
+#cursor = "CellForeground"
+
+# 搜索匹配的颜色：matches 是所有匹配，focused_match 是当前选中的那一个。
+[colors.search]
+#matches = { foreground = "#181818", background = "#ac4242" }
+#focused_match = { foreground = "#181818", background = "#f4bf75" }
+
+# hints 标签的颜色：start 是标签的第一个字符，end 是其余字符。
+[colors.hints]
+#start = { foreground = "#181818", background = "#f4bf75" }
+#end = { foreground = "#181818", background = "#ac4242" }
+
+# 搜索和 vi 模式下显示回滚位置的指示器；"None" 表示使用与主色相反的颜色。
+[colors.line_indicator]
+#foreground = "None"
+#background = "None"
+
+# 底部栏的颜色，用于搜索输入、超链接预览等。
+[colors.footer_bar]
+#foreground = "#181818"
+#background = "#d8d8d8"
+
+# 选区颜色。
+[colors.selection]
+#text = "CellBackground"
+#background = "CellForeground"
+
+# 标准 8 色。
+[colors.normal]
+#black = "#181818"
+#red = "#ac4242"
+#green = "#90a959"
+#yellow = "#f4bf75"
+#blue = "#6a9fb5"
+#magenta = "#aa759f"
+#cyan = "#75b5aa"
+#white = "#d8d8d8"
+
+# 高亮 8 色。
+[colors.bright]
+#black = "#6b6b6b"
+#red = "#c55555"
+#green = "#aac474"
+#yellow = "#feca88"
+#blue = "#82b8c8"
+#magenta = "#c28cb8"
+#cyan = "#93d3c3"
+#white = "#f8f8f8"
+
+# 暗淡 8 色；不设置时根据 normal 自动计算。
+[colors.dim]
+#black = "#0f0f0f"
+#red = "#712b2b"
+#green = "#5f6f3a"
+#yellow = "#a17e4d"
+#blue = "#456877"
+#magenta = "#704d68"
+#cyan = "#4d7770"
+#white = "#8e8e8e"
+
+
+# ============================================================================
+# [bell] 响铃
+# ============================================================================
+# 程序发出响铃（BEL）时的反应。窗口不在焦点时，响铃还会让 Dock 图标跳动。
+[bell]
+
+# 可视响铃（屏幕闪一下）的动画曲线：
+# "Ease" | "EaseOut" | "EaseOutSine" | "EaseOutQuad" | "EaseOutCubic" |
+# "EaseOutQuart" | "EaseOutQuint" | "EaseOutExpo" | "EaseOutCirc" | "Linear"
+#animation = "Linear"
+
+# 可视响铃持续的毫秒数；0 表示关闭可视响铃。
+#duration = 0
+
+# 可视响铃的颜色。
+#color = "#ffffff"
+
+# 每次响铃时执行的命令；"None" 表示不执行。
+# 带参数的写法：command = { program = "afplay", args = ["/System/Library/Sounds/Ping.aiff"] }
+#command = "None"
+
+
+# ============================================================================
+# [selection] 选择
+# ============================================================================
+[selection]
+
+# 双击选词时，哪些字符算作单词的分隔符。
+#semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+# 选中文字后是否自动复制到系统剪贴板。
+#save_to_clipboard = false
+
+
+# ============================================================================
+# [cursor] 光标
+# ============================================================================
+[cursor]
+
+# 光标样式。
+#   shape:    "Block"（方块） | "Underline"（下划线） | "Beam"（竖线）
+#   blinking: "Never"  永不闪烁，程序也不能开启
+#             "Off"    默认不闪烁，程序可以开启
+#             "On"     默认闪烁，程序可以关闭
+#             "Always" 始终闪烁，程序也不能关闭
+#style = { shape = "Block", blinking = "Off" }
+
+# vi 模式下的光标样式，写法同上；"None" 表示沿用普通光标的样式。
+#vi_mode_style = "None"
+
+# 闪烁间隔，单位毫秒。
+#blink_interval = 750
+
+# 无操作多少秒后停止闪烁；0 表示一直闪。
+#blink_timeout = 5
+
+# 窗口失去焦点时，光标显示为空心方块。
+#unfocused_hollow = true
+
+# 竖线和下划线光标的粗细，相对单元格宽度，0.0 到 1.0。
+#thickness = 0.15
+
+
+# ============================================================================
+# [terminal] 终端
+# ============================================================================
+[terminal]
+
+# 启动的 shell。默认使用 $SHELL，未设置时用登录 shell（Windows 上是 powershell）。
+# 示例：
+#shell = { program = "/bin/zsh", args = ["-l"] }
+
+# 是否允许程序通过 OSC 52 读写系统剪贴板：
+#   "Disabled"  都不允许
+#   "OnlyCopy"  只允许写入（远程机器上复制内容到本机时有用）
+#   "OnlyPaste" 只允许读取
+#   "CopyPaste" 都允许
+# 允许读取意味着任何程序都能偷看剪贴板，所以默认只允许写入。
+#osc52 = "OnlyCopy"
+
+# 是否支持 Program Status Protocol（OSC 7501）。Claude Code、Codex 等 agent
+# 通过它报告自己在工作、在等你还是已完成。开启后：
+#   - 窗口标题前显示状态：⏳ 工作中（有进度时带百分比）、🔔 等你、✅ 完成、❌ 失败；
+#     结果会保留到你切回该窗口为止。
+#   - agent 开始等你、失败或完成时发桌面通知，规则见 [notifications]。
+#   - macOS 的 Dock 图标显示有多少个窗口在等你或有未看过的失败
+#     （需在 系统设置 → 通知 → XaYa 里打开“标记应用图标”）。
+#   - 窗口显示状态期间，该窗口的 OSC 9 / OSC 777 通知会被丢弃，避免重复提醒。
+# Claude Code 和 Codex 无需额外设置。
+#program_status = true
+
+# 是否显示 agent 每一轮改了 git 检出里的什么（需要 program_status）。
+# 一轮从 agent 报告“工作中”开始，到完成、失败或回到空闲为止；开始和结束时
+# XaYa 各给工作区拍一次 git tree 快照（用 index 的副本，不动你暂存的内容，
+# 被忽略的文件不算）。agent 面板显示上一轮的改动，例如“3 files +48 -3”，
+# 按 d 在下方 pane 打开 diff；`xaya msg status --json` 的 changes 字段也有。
+# 没有改动的一轮会清掉显示。这一轮期间别的程序写入的文件也会算进去。
+#turn_changes = true
+
+
+# ============================================================================
+# [mouse] 鼠标
+# ============================================================================
+[mouse]
+
+# 打字时暂时隐藏鼠标指针。
+#hide_when_typing = false
+
+# 鼠标按键绑定，字段和 [keyboard] 的 bindings 相同，只是把 key 换成 mouse。
+#   mouse:  "Left" | "Middle" | "Right" | "Back" | "Forward" | "WheelUp" | "WheelDown" | 按键编号
+#   action: 除了键盘可用的动作，还有 "ExpandSelection"（把选区扩展到鼠标位置）
+# 程序捕获鼠标时，按住 Shift 可以绕过程序，让 XaYa 处理点击。
+# 示例：Ctrl+右键粘贴
+#bindings = [
+#  { mouse = "Right", mods = "Control", action = "Paste" },
+#]
+
+
+# ============================================================================
+# [notifications] 桌面通知
+# ============================================================================
+# 以下情况会发桌面通知：
+#   - agent 开始等你输入或授权、失败、工作后完成（需要 terminal.program_status）；
+#   - 运行时间较长的 shell 命令结束（需要 shell 集成，见 command_threshold）；
+#   - 程序通过 OSC 9 或 OSC 777 主动请求。
+# 每个窗口每秒最多显示一条。
+[notifications]
+
+# 总开关。
+#enabled = true
+
+# 只在窗口没有焦点时通知。这里的焦点精确到分屏里的 pane：
+# 你正看着的那个 pane 不通知，同一窗口的其他 pane、其他标签和窗口照常通知。
+# 改成 false 后，看着窗口时也会通知。
+# 窗口没有焦点时发通知，还会让 Dock 图标跳动。
+#only_when_unfocused = true
+
+# 用来显示通知的自定义命令，标题和正文会作为最后两个参数追加。
+# 不设置时：
+#   - macOS 发送带 XaYa 图标的原生通知。第一条会请求权限，之后可以在
+#     系统设置 → 通知 → XaYa 里调整；点击通知会切回发出它的窗口或标签。
+#     没看到横幅时，先检查那里的提醒样式和专注模式。
+#   - 其他 Unix 系统使用 notify-send。
+#   - Windows 没有默认的通知方式。
+# 示例：
+#command = { program = "terminal-notifier", args = ["-sound", "default", "-title"] }
+
+# shell 命令运行超过多少秒，结束时才提醒；0 表示从不提醒。
+# 需要 shell 集成：在 shell 启动文件末尾 source
+# /Applications/XaYa.app/Contents/Resources/shell-integration/ 下的
+# xaya.zsh、xaya.bash 或 xaya.fish。
+# 提醒时标题显示 ✅（失败为 ❌），通知里写明运行了多久。
+# agent 这类自己报告状态的命令不会重复提醒。
+#command_threshold = 10
+
+
+# ============================================================================
+# [session] 会话恢复（仅 Unix）
+# ============================================================================
+# XaYa 运行时会把打开的窗口记录到 ~/.local/state/xaya/session.json
+# （遵循 $XDG_STATE_HOME）。XaYa 退出、崩溃或升级时还开着的窗口，
+# 下次启动会在原目录重新打开；你主动关掉的窗口不会恢复。
+# 当时在跑 Claude Code 或 Codex 的窗口还会恢复会话：shell 就绪后，XaYa 自动输入
+# 并执行 `claude --resume <会话>` 或 `codex resume <会话>`。
+# 用 `-e` 或 `--working-directory` 启动 XaYa 时不恢复。
+# 第一次恢复时，窗口底部的消息栏会说明发生了什么。
+[session]
+
+# 启动时恢复哪些窗口：
+#   "Agents" 只恢复当时在跑 agent 的窗口，并恢复 agent 会话
+#   "All"    恢复所有窗口，agent 会话同样恢复
+#   "Never"  不恢复，也不保存记录
+# 不希望重启后 agent 自动继续，就改成 "Never"。
+#restore = "Agents"
+
+
+# ============================================================================
+# [worktree] worktree 标签（仅 Unix）
+# ============================================================================
+# 多个 agent 在同一个代码目录里工作，会互相改到对方的文件。
+# 快捷键 Cmd+Shift+T（其他平台 Ctrl+Shift+T）或 `xaya msg create-worktree`
+# 会基于当前提交新建一个 git worktree 和 agent-N 分支，并在新标签里打开它。
+[worktree]
+
+# 新 worktree 标签里自动执行的命令。
+# 不设置时，启动当前窗口里正在运行的 agent（claude 或 codex）；没有则不执行。
+# 示例：
+#command = "claude"
+
+# 新 worktree 放在哪个目录下，每个 worktree 占一个以分支命名的子目录。
+# 不设置时，放在仓库旁边的 `<仓库名>.worktrees` 目录。
+# 要写绝对路径，这里不会展开 `~`。
+# 示例：
+#directory = "/Users/you/worktrees"
+
+# 多个窗口里的 agent 在同一个代码目录工作时，在消息栏里警告；
+# 每次开始共用时只警告一次。
+#warn_shared = true
+
+
+# ============================================================================
+# [hints] 提示（可点击的链接和文件路径）
+# ============================================================================
+# hints 在屏幕可见范围内查找文字或超链接，可以用鼠标点击，
+# 也可以按快捷键后用键盘标签选择。
+[hints]
+
+# 键盘选择时，标签使用的字符。
+#alphabet = "jfkdls;ahgurieowpq"
+
+# 打开文件路径时使用的编辑器。文件的绝对路径作为最后一个参数追加，
+# 路径后带行列号时会一并传入，例如 src/main.rs:12:5。
+# VS Code 和 Cursor 需要加 "-g"，Zed 和 Sublime Text 不需要。
+# 不设置时，用系统默认应用打开文件，不带行列位置。
+# 从 Dock 启动的 XaYa 可能找不到命令，打不开时改用完整路径，例如 /usr/local/bin/code。
+# 示例：
+#editor = { program = "code", args = ["-g"] }
+
+# 内置的两条 hint：
+#   1. 链接：鼠标单击，或 Ctrl+Shift+O 后用键盘选择，用系统默认方式打开。
+#   2. 文件路径（如 src/main.rs:12:5、./run.sh）：按住 Cmd（其他平台 Ctrl）单击，
+#      或 Ctrl+Shift+E 后用键盘选择，用上面的 editor 打开。
+#
+# 自定义 hint 用 [[hints.enabled]] 定义。注意：只要定义了一条，内置的两条就不再
+# 生效，需要的话要一并写上。每条 hint 必须有 regex 或 hyperlinks 之一，
+# 以及 action 或 command 之一：
+#   regex           每一行用来匹配的正则表达式
+#   hyperlinks      是否包含 OSC 8 超链接
+#   post_processing 是否去掉匹配末尾不太可能属于链接的字符（如句号），只对 regex 有效
+#   persist         选择一次后是否继续停留在选择状态
+#   action          "Copy" 复制 | "Paste" 粘贴到终端 | "Select" 选中 |
+#                   "MoveViModeCursor" 把 vi 光标移过去 | "OpenFile" 用 editor 打开
+#   command         要执行的命令，匹配到的文字作为最后一个参数
+#   binding         启动键盘选择的快捷键，写法见 [keyboard]
+#   mouse           mods 是点击时需要按住的修饰键，enabled 是悬停时是否加下划线
+#
+# 示例：Ctrl+Shift+U 后用键盘选择，把屏幕上的 git 提交哈希复制到剪贴板
+#[[hints.enabled]]
+#regex = "[0-9a-f]{7,40}"
+#action = "Copy"
+#post_processing = false
+#persist = false
+#mouse = { enabled = false }
+#binding = { key = "U", mods = "Control|Shift" }
+
+
+# ============================================================================
+# [keyboard] 快捷键
+# ============================================================================
+[keyboard]
+
+# 这里的绑定是在默认快捷键之上追加或覆盖，默认快捷键见 `man 5 alacritty-bindings`。
+# 每条绑定的字段：
+#   key     按键。普通键直接写，如 "A"、"0"；功能键写名字，如 "F1"、"Enter"、"PageUp"；
+#           小键盘加 Numpad 前缀，如 "NumpadEnter"。
+#   mods    修饰键："Command" | "Control" | "Option" | "Super" | "Shift" | "Alt"，
+#           多个用 | 连接，如 "Control|Shift"。
+#   mode    只在某个终端模式下生效："AppCursor" | "AppKeypad" | "Search" | "Alt" | "Vi"；
+#           前面加 ~ 表示不在该模式时生效，多个用 | 连接，如 "~Vi|Search"。
+#   然后是以下三者之一：
+#   action  执行一个动作，见下面的列表
+#   chars   向终端输入一段文字
+#   command 执行一个外部命令，写法同 [bell] 的 command
+#
+# 取消一个默认快捷键：把 action 设为 "ReceiveChar"（按键照常输入）
+# 或 "None"（什么都不做）。
+#
+# XaYa 新增的动作（括号里是默认快捷键：macOS / 其他平台）：
+#   SelectNextAttention    跳到下一个需要你的窗口（Cmd+J / Ctrl+Shift+J）
+#   ToggleAgentPanel       打开或关闭 agent 面板（Cmd+Shift+A / Ctrl+Shift+A）
+#   CreateWorktreeTab      新建 worktree 标签（Cmd+Shift+T / Ctrl+Shift+T）
+#   SplitRight             向右分屏（Cmd+D / Ctrl+Shift+D）
+#   SplitDown              向下分屏（Cmd+Shift+D / Ctrl+Shift+Alt+D）
+#   FocusNextPane          下一个 pane（Cmd+] / Ctrl+Shift+PageDown）
+#   FocusPreviousPane      上一个 pane（Cmd+[ / Ctrl+Shift+PageUp）
+#   ScrollToPreviousPrompt 滚动到上一个提示符，需 shell 集成（Cmd+↑ / Ctrl+Shift+↑）
+#   ScrollToNextPrompt     滚动到下一个提示符，需 shell 集成（Cmd+↓ / Ctrl+Shift+↓）
+#
+# 常用的通用动作：
+#   Copy、Paste、IncreaseFontSize、DecreaseFontSize、ResetFontSize、
+#   ScrollPageUp、ScrollPageDown、ScrollToTop、ScrollToBottom、ClearHistory、
+#   SearchForward、SearchBackward、ToggleViMode、ToggleFullscreen、ToggleMaximized、
+#   CreateNewWindow、SpawnNewInstance、Hide、Minimize、Quit
+# 仅 macOS：
+#   CreateNewTab、SelectNextTab、SelectPreviousTab、SelectTab1 … SelectTab9、
+#   SelectLastTab、ToggleSimpleFullscreen、HideOtherApplications
+# 完整列表（包括 vi 模式和搜索的动作）见 `man 5 alacritty`。
+#
+# 示例：
+#bindings = [
+#  { key = "P", mods = "Command|Shift", action = "ToggleAgentPanel" },
+#  { key = "N", mods = "Control|Shift", action = "CreateNewWindow" },
+#  { key = "L", mods = "Control|Shift", chars = "clear\r" },
+#]
+
+
+# ============================================================================
+# [debug] 调试
+# ============================================================================
+# 用于排查问题。这些选项可能随时变更或移除，日常使用不需要修改。
+[debug]
+
+# 显示每一帧的绘制耗时。
+#render_timer = false
+
+# 退出后保留日志文件。
+#persistent_logging = false
+
+# 日志级别："Off" | "Error" | "Warn" | "Info" | "Debug" | "Trace"。
+#log_level = "Warn"
+
+# 强制使用某个渲染器："metal" | "glsl3" | "gles2" | "gles2pure" | "None"。
+# "metal" 仅 macOS 可用；"None" 在 macOS 上优先用 Metal，不可用时回退 OpenGL，
+# 其他平台用可用的最高版本 OpenGL。
+#renderer = "None"
+
+# 把收到的所有窗口事件写进日志。
+#print_events = false
+
+# 高亮显示每帧重绘的区域。
+#highlight_damage = false
+
+# 平台允许时用 EGL 作为显示 API。Linux/BSD 上用 EGL 时透明效果可能失效。
+#prefer_egl = false
